@@ -8,14 +8,11 @@ env:
     IMAGE_REPO_NAME_YOLO: mlops/yolo-backend
     IMAGE_REPO_NAME_DEPTH: mlops/depth-backend
     IMAGE_TAG: prod
-    # Production URLs from your Terraform deployment
     REACT_APP_YOLO_API_URL: http://mlops-alb-1724185036.us-east-1.elb.amazonaws.com/yolo
     REACT_APP_DEPTH_API_URL: http://mlops-alb-1724185036.us-east-1.elb.amazonaws.com/depth
 
 phases:
-  install:
-    runtime-versions:
-      docker: 20
+  # Remove the install phase entirely - Docker is available by default
 
   pre_build:
     commands:
@@ -27,7 +24,6 @@ phases:
     commands:
       - echo "Build started on $(date)"
 
-      # Build frontend with production environment variables
       - echo "Building frontend image with production API URLs..."
       - cd ./object-detection-react-app
       - echo "REACT_APP_YOLO_API_URL=$REACT_APP_YOLO_API_URL" > .env.production
@@ -49,7 +45,3 @@ phases:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_YOLO:$IMAGE_TAG
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_DEPTH:$IMAGE_TAG
       - echo "All images pushed successfully!"
-
-artifacts:
-  files:
-    - "**/*"
